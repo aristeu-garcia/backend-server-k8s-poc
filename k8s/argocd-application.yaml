@@ -7,8 +7,7 @@ spec:
   project: default
 
   source:
-    # >>> TROQUE pela URL do SEU repositório Git (onde está a pasta k8s/) <<<
-    repoURL: https://github.com/SEU_USUARIO/backend-server-k8s-poc.git
+    repoURL: https://github.com/aristeu-garcia/backend-server-k8s-poc.git
     targetRevision: main
     # Caminho, dentro do repo, onde estão os manifests (namespace/deployment/service)
     path: k8s
