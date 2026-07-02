@@ -17,14 +17,10 @@ spec:
       resource:
         name: cpu
         target:
-          # alvo baixo de propósito: o request é 50m, 50% = 25m.
-          # sob carga o pod passa disso facil e o HPA sobe pra 2 réplicas.
           type: Utilization
           averageUtilization: 50
   behavior:
     scaleUp:
-      # sobe rápido, bom pra ver o demo acontecer
       stabilizationWindowSeconds: 0
     scaleDown:
-      # desce devagar pra não "piscar" de volta pra 1 assim que a carga cai
       stabilizationWindowSeconds: 60
