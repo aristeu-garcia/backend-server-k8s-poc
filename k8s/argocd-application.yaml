@@ -9,7 +9,6 @@ spec:
   source:
     repoURL: https://github.com/aristeu-garcia/backend-server-k8s-poc.git
     targetRevision: main
-    # Caminho, dentro do repo, onde estão os manifests (namespace/deployment/service)
     path: k8s
 
   destination:
