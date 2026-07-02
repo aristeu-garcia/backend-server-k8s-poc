@@ -21,3 +21,14 @@ spec:
       selfHeal: true   # reverte mudanças feitas direto no cluster (kubectl edit etc.)
     syncOptions:
       - CreateNamespace=true
+      - RespectIgnoreDifferences=true   # não reaplica os campos listados em ignoreDifferences
+
+  # o HPA controla o nº de réplicas em runtime. Sem isso, o selfHeal do Argo
+  # brigaria com o HPA e voltaria o Deployment pra 1 réplica.
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: backend-server
+      namespace: backend-poc
+      jsonPointers:
+        - /spec/replicas
