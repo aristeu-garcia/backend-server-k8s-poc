@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backend-server
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    # >>> TROQUE pela URL do SEU repositório Git (onde está a pasta k8s/) <<<
+    repoURL: https://github.com/SEU_USUARIO/backend-server-k8s-poc.git
+    targetRevision: main
+    # Caminho, dentro do repo, onde estão os manifests (namespace/deployment/service)
+    path: k8s
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: backend-poc
+
+  syncPolicy:
+    automated:
+      prune: true      # remove do cluster o que for apagado do Git
+      selfHeal: true   # reverte mudanças feitas direto no cluster (kubectl edit etc.)
+    syncOptions:
+      - CreateNamespace=true

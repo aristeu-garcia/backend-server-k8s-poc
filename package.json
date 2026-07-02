@@ -1,0 +1,13 @@
+{
+  "name": "backend-server-k8s-poc",
+  "version": "1.0.0",
+  "description": "Simple Express API for a Kubernetes PoC",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
