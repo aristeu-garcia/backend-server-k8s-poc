@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: backend-server
+  name: backend-server-dev
   namespace: argocd
 spec:
   project: default
@@ -9,11 +9,11 @@ spec:
   source:
     repoURL: https://github.com/aristeu-garcia/backend-server-k8s-poc.git
     targetRevision: main
-    path: k8s
+    path: k8s/overlays/dev
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: backend-poc
+    namespace: backend-poc-dev
 
   syncPolicy:
     automated:
@@ -29,6 +29,6 @@ spec:
     - group: apps
       kind: Deployment
       name: backend-server
-      namespace: backend-poc
+      namespace: backend-poc-dev
       jsonPointers:
         - /spec/replicas

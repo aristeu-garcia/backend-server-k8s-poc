@@ -2,7 +2,6 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: backend-server
-  namespace: backend-poc
   labels:
     app: backend-server
 spec:

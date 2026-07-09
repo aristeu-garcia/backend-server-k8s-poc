@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backend-server-prod
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/aristeu-garcia/backend-server-k8s-poc.git
+    targetRevision: main
+    path: k8s/overlays/prod
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: backend-poc-prod
+
+  syncPolicy:
+    automated:
+      prune: true      # remove do cluster o que for apagado do Git
+      selfHeal: true   # reverte mudanças feitas direto no cluster (kubectl edit etc.)
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true   # não reaplica os campos listados em ignoreDifferences
+
+  # o HPA controla o nº de réplicas em runtime. Sem isso, o selfHeal do Argo
+  # brigaria com o HPA e voltaria o Deployment pra 1 réplica.
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: backend-server
+      namespace: backend-poc-prod
+      jsonPointers:
+        - /spec/replicas
