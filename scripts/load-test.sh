@@ -1,25 +1,10 @@
 #!/usr/bin/env bash
-#
-# load-test.sh — gera carga no backend-server pra ver o HPA escalar de 1 -> 2 pods.
-#
-# O que ele faz:
-#   1. garante o metrics-server (o HPA precisa dele pra ler CPU)
-#   2. aplica o HPA (k8s/hpa.yaml)
-#   3. sobe um pod "load-gen" DENTRO do cluster que martela o Service em paralelo
-#      (por dentro do cluster o throughput é bem maior que via port-forward)
-#   4. fica mostrando o HPA + os pods ao vivo até escalar (ou dar timeout)
-#   5. no fim, remove o load-gen
-#
-# Uso:
-#   ./scripts/load-test.sh                 # padrões (50 workers, 180s)
-#   WORKERS=80 DURATION=240 ./scripts/load-test.sh
-#
 set -euo pipefail
 
 NS="backend-poc"
 SVC="backend-server"
-WORKERS="${WORKERS:-50}"      # nº de loops de wget em paralelo
-DURATION="${DURATION:-180}"   # por quanto tempo (s) gerar carga
+WORKERS="${WORKERS:-50}"
+DURATION="${DURATION:-180}"
 LOADGEN="load-gen"
 URL="http://${SVC}.${NS}.svc.cluster.local/items"
 
@@ -31,7 +16,6 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-# --- 1. metrics-server -------------------------------------------------------
 if ! kubectl top pods -n "${NS}" >/dev/null 2>&1; then
   log "metrics-server não respondeu. Tentando habilitar no minikube..."
   if command -v minikube >/dev/null 2>&1; then
@@ -45,12 +29,10 @@ if ! kubectl top pods -n "${NS}" >/dev/null 2>&1; then
   fi
 fi
 
-# --- 2. HPA ------------------------------------------------------------------
 log "aplicando o HPA..."
 kubectl apply -f "$(dirname "$0")/../k8s/hpa.yaml"
 
-# --- 3. pod de carga (in-cluster) -------------------------------------------
-cleanup   # garante que não tem um load-gen velho rodando
+cleanup
 log "subindo o pod de carga: ${WORKERS} workers batendo em ${URL} por ${DURATION}s"
 kubectl run "${LOADGEN}" -n "${NS}" \
   --image=busybox:1.36 --restart=Never \
@@ -68,7 +50,6 @@ kubectl run "${LOADGEN}" -n "${NS}" \
 
 kubectl wait --for=condition=Ready "pod/${LOADGEN}" -n "${NS}" --timeout=60s
 
-# --- 4. acompanha o escalonamento -------------------------------------------
 log "gerando carga... acompanhe abaixo (Ctrl+C interrompe e limpa)."
 echo
 deadline=$(( $(date +%s) + DURATION + 30 ))

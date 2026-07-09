@@ -17,14 +17,12 @@ spec:
 
   syncPolicy:
     automated:
-      prune: true      # remove do cluster o que for apagado do Git
-      selfHeal: true   # reverte mudanças feitas direto no cluster (kubectl edit etc.)
+      prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - RespectIgnoreDifferences=true   # não reaplica os campos listados em ignoreDifferences
+      - RespectIgnoreDifferences=true
 
-  # o HPA controla o nº de réplicas em runtime. Sem isso, o selfHeal do Argo
-  # brigaria com o HPA e voltaria o Deployment pra 1 réplica.
   ignoreDifferences:
     - group: apps
       kind: Deployment
