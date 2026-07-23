@@ -6,6 +6,7 @@ namespace: backend-poc-prod
 resources:
   - namespace.yaml
   - ../../base
+  - servicemonitor.yaml
 
 patches:
   - path: patch-service.yaml

@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    chart: kube-prometheus
+    targetRevision: 11.3.10
+    helm:
+      # docker.io/bitnami/* stopped serving pinned version tags (moved behind
+      # Bitnami Secure Images); bitnamilegacy mirrors the old free tags.
+      values: |
+        operator:
+          image:
+            repository: bitnamilegacy/prometheus-operator
+        prometheus:
+          image:
+            repository: bitnamilegacy/prometheus
+        alertmanager:
+          image:
+            repository: bitnamilegacy/alertmanager
+        blackboxExporter:
+          image:
+            repository: bitnamilegacy/blackbox-exporter
+        node-exporter:
+          image:
+            repository: bitnamilegacy/node-exporter
+        kube-state-metrics:
+          image:
+            repository: bitnamilegacy/kube-state-metrics
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
